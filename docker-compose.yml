@@ -1,0 +1,15 @@
+version: '3.8'
+
+services:
+  oracle-db:
+    image: gvenzl/oracle-free:slim-faststart
+    container_name: autoflex-oracle
+    environment:
+      - ORACLE_PASSWORD=admin
+    ports:
+      - "1521:1521"
+    volumes:
+      - oracle_data:/opt/oracle/oradata
+
+volumes:
+  oracle_data:
