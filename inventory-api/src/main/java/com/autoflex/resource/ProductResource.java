@@ -179,6 +179,51 @@ public class ProductResource {
     @Transactional
     public Response deleteMaterialQuantity(@PathParam("id") Long productId,
             @PathParam("materialCode") String materialCode) {
+        Product product = Product.findById(productId);
+        if (product == null) {
+            return Response.status(Response.Status.NOT_FOUND).build();
+        }
 
+        ProductRawMaterial associationToDelete = product.materials.stream()
+                .filter(pm -> pm.rawMaterial.code.equals(materialCode))
+                .findFirst()
+                .orElse(null);
+
+        if (associationToDelete == null) {
+            return Response.status(Response.Status.NOT_FOUND).build();
+        }
+
+        product.materials.remove(associationToDelete);
+
+        return Response.noContent().build();
+
+    }
+
+    // Bulk Update
+    @PUT
+    @Path("/{id}/materials")
+    @Transactional
+    public Response syncMaterials(@PathParam("id") Long id, List<ProductRawMaterialDTO> materialDTOs) {
+        Product product = Product.findById(id);
+        if (product == null) {
+            return Response.status(Response.Status.NOT_FOUND).build();
+        }
+
+        product.materials.clear();
+
+        for (ProductRawMaterialDTO dto : materialDTOs) {
+            RawMaterial rawMaterial = RawMaterial.find("code", dto.rawMaterialCode()).firstResult();
+            if (rawMaterial == null) {
+                return Response.status(Response.Status.BAD_REQUEST).build();
+            }
+
+            ProductRawMaterial newAssociation = new ProductRawMaterial();
+            newAssociation.rawMaterial = rawMaterial;
+            newAssociation.quantityNeeded = dto.quantityNeeded();
+
+            product.addRawMaterial(newAssociation);
+        }
+
+        return Response.ok(product.materials).build();
     }
 }
