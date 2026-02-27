@@ -19,6 +19,7 @@ import jakarta.ws.rs.PathParam;
 import jakarta.ws.rs.Produces;
 import jakarta.ws.rs.QueryParam;
 import jakarta.ws.rs.core.MediaType;
+import jakarta.validation.Valid;
 import jakarta.ws.rs.core.Response;
 
 @Path("/api/products")
@@ -93,7 +94,7 @@ public class ProductResource {
 
     @POST
     @Transactional
-    public Response createProduct(ProductDTO dto) {
+    public Response createProduct(@Valid ProductDTO dto) {
         Product entity = new Product();
         entity.name = dto.name();
         entity.code = dto.code();
@@ -111,7 +112,7 @@ public class ProductResource {
     @PUT
     @Path("/{id}")
     @Transactional
-    public Response updateProduct(@PathParam("id") Long id, ProductDTO dto) {
+    public Response updateProduct(@PathParam("id") Long id, @Valid ProductDTO dto) {
         Product entity = Product.findById(id);
         if (entity == null) {
             return Response.status(Response.Status.NOT_FOUND).build();
@@ -129,7 +130,7 @@ public class ProductResource {
     @POST
     @Path("/{id}/materials")
     @Transactional
-    public Response addRawMaterial(@PathParam("id") Long id, ProductRawMaterialDTO dto) {
+    public Response addRawMaterial(@PathParam("id") Long id, @Valid ProductRawMaterialDTO dto) {
         Product entity = Product.findById(id);
         if (entity == null) {
             return Response.status(Response.Status.NOT_FOUND).build();
@@ -154,7 +155,7 @@ public class ProductResource {
     @Path("/{id}/materials/{materialCode}")
     @Transactional
     public Response updateMaterialQuantity(@PathParam("id") Long productId,
-            @PathParam("materialCode") String materialCode, ProductRawMaterialDTO dto) {
+            @PathParam("materialCode") String materialCode, @Valid ProductRawMaterialDTO dto) {
         Product product = Product.findById(productId);
         if (product == null) {
             return Response.status(Response.Status.NOT_FOUND).build();
@@ -203,7 +204,7 @@ public class ProductResource {
     @PUT
     @Path("/{id}/materials")
     @Transactional
-    public Response syncMaterials(@PathParam("id") Long id, List<ProductRawMaterialDTO> materialDTOs) {
+    public Response syncMaterials(@PathParam("id") Long id, List<@Valid ProductRawMaterialDTO> materialDTOs) {
         Product product = Product.findById(id);
         if (product == null) {
             return Response.status(Response.Status.NOT_FOUND).build();

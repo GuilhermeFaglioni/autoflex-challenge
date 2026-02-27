@@ -16,6 +16,7 @@ import jakarta.ws.rs.PathParam;
 import jakarta.ws.rs.Produces;
 import jakarta.ws.rs.QueryParam;
 import jakarta.ws.rs.core.MediaType;
+import jakarta.validation.Valid;
 import jakarta.ws.rs.core.Response;
 
 @Path("/api/raw-materials")
@@ -80,7 +81,7 @@ public class RawMaterialResource {
 
     @POST
     @Transactional
-    public Response create(RawMaterialDTO dto) {
+    public Response create(@Valid RawMaterialDTO dto) {
         RawMaterial entity = new RawMaterial();
         entity.code = dto.code();
         entity.name = dto.name();
@@ -94,7 +95,7 @@ public class RawMaterialResource {
     @PUT
     @Path("/{id}")
     @Transactional
-    public Response update(@PathParam("id") Long id, RawMaterialDTO dto) {
+    public Response update(@PathParam("id") Long id, @Valid RawMaterialDTO dto) {
         RawMaterial entity = RawMaterial.findById(id);
 
         if (entity == null) {
