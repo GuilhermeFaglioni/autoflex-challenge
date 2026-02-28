@@ -12,7 +12,7 @@ import jakarta.ws.rs.core.Response;
 
 @Path("/api/production")
 @Produces(MediaType.APPLICATION_JSON)
-public class ProductionResouce {
+public class ProductionResource {
 
     @Inject
     ProductionService productionService;

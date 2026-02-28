@@ -7,6 +7,7 @@ import java.util.List;
 import io.quarkus.hibernate.orm.panache.PanacheEntity;
 import jakarta.persistence.CascadeType;
 import jakarta.persistence.Entity;
+import jakarta.persistence.FetchType;
 import jakarta.persistence.OneToMany;
 
 @Entity
@@ -15,7 +16,7 @@ public class Product extends PanacheEntity {
     public String code;
     public BigDecimal price;
 
-    @OneToMany(mappedBy = "product", cascade = CascadeType.ALL, orphanRemoval = true)
+    @OneToMany(mappedBy = "product", cascade = CascadeType.ALL, orphanRemoval = true, fetch = FetchType.EAGER)
     public List<ProductRawMaterial> materials = new ArrayList<>();
 
     public void addRawMaterial(ProductRawMaterial material) {
