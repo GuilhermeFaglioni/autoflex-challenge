@@ -77,10 +77,10 @@ export function ProductsPage() {
         syncMaterialsMutation.isPending ||
         deleteMutation.isPending;
 
-    const [formValues, setFormValues] = useState<ProductRequestDTO>({
+    const [formValues, setFormValues] = useState<Omit<ProductRequestDTO, 'price'> & { price: number | '' }>({
         code: '',
         name: '',
-        price: 0
+        price: ''
     });
     const [selectedMaterials, setSelectedMaterials] = useState<ProductMaterial[]>([]);
 
@@ -115,7 +115,7 @@ export function ProductsPage() {
             setFormValues({
                 code: '',
                 name: '',
-                price: 0
+                price: ''
             });
             setSelectedMaterials([]);
         }
@@ -133,7 +133,7 @@ export function ProductsPage() {
         const { name, value } = e.target;
         setFormValues(prev => ({
             ...prev,
-            [name]: name === 'price' ? parseFloat(value) || 0 : value
+            [name]: name === 'price' ? (value === '' ? '' : parseFloat(value)) : value
         }));
     };
 
@@ -167,6 +167,11 @@ export function ProductsPage() {
     const handleSubmit = async (e: React.FormEvent) => {
         e.preventDefault();
 
+        const submitValues: ProductRequestDTO = {
+            ...formValues,
+            price: formValues.price === '' ? 0 : formValues.price
+        };
+
         try {
             let productId: number;
 
@@ -174,10 +179,10 @@ export function ProductsPage() {
                 productId = editingProduct.id;
                 await updateMutation.mutateAsync({
                     id: productId,
-                    product: formValues
+                    product: submitValues
                 });
             } else {
-                const newProduct = await createMutation.mutateAsync(formValues);
+                const newProduct = await createMutation.mutateAsync(submitValues);
                 productId = newProduct.id;
             }
 
@@ -510,7 +515,7 @@ export function ProductsPage() {
                             <Button
                                 type="submit"
                                 variant="contained"
-                                disabled={formLoading}
+                                disabled={formLoading || formValues.price === '' || formValues.price < 0}
                                 sx={{ borderRadius: 2, px: 4 }}
                                 startIcon={formLoading ? <CircularProgress size={20} color="inherit" /> : null}
                             >
