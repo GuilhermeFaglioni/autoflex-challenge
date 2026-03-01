@@ -85,7 +85,7 @@ export function ProductsPage() {
     const [selectedMaterials, setSelectedMaterials] = useState<ProductMaterial[]>([]);
 
     const [currentMaterialId, setCurrentMaterialId] = useState<number | ''>('');
-    const [currentQuantity, setCurrentQuantity] = useState<number>(1);
+    const [currentQuantity, setCurrentQuantity] = useState<number | ''>(1);
 
     const filteredProducts = useMemo(() => {
         if (!searchTerm.trim()) return products;
@@ -138,7 +138,7 @@ export function ProductsPage() {
     };
 
     const handleAddMaterial = () => {
-        if (currentMaterialId === '') return;
+        if (currentMaterialId === '' || currentQuantity === '' || currentQuantity < 1) return;
 
         const rawMaterial = availableRawMaterials.find(m => m.id === currentMaterialId);
         if (!rawMaterial) return;
@@ -152,7 +152,7 @@ export function ProductsPage() {
         const newProductMaterial: ProductMaterial = {
             id: Date.now(),
             rawMaterial: rawMaterial,
-            quantityNeeded: Math.floor(currentQuantity)
+            quantityNeeded: Math.floor(currentQuantity as number)
         };
 
         setSelectedMaterials([...selectedMaterials, newProductMaterial]);
@@ -277,8 +277,8 @@ export function ProductsPage() {
                     </CardContent>
                 </Card>
 
-                <TableContainer component={Paper} sx={{ borderRadius: 3, boxShadow: '0 4px 20px rgba(0,0,0,0.08)', overflow: 'hidden' }}>
-                    <Table>
+                <TableContainer component={Paper} sx={{ borderRadius: 3, boxShadow: '0 4px 20px rgba(0,0,0,0.08)', overflow: 'auto' }}>
+                    <Table sx={{ minWidth: 650 }}>
                         <TableHead sx={{ bgcolor: alpha(theme.palette.primary.main, 0.04) }}>
                             <TableRow>
                                 <TableCell sx={{ fontWeight: 600 }}>Code</TableCell>
@@ -445,7 +445,10 @@ export function ProductsPage() {
                                                     size="small"
                                                     fullWidth
                                                     value={currentQuantity}
-                                                    onChange={(e) => setCurrentQuantity(parseInt(e.target.value) || 1)}
+                                                    onChange={(e) => {
+                                                        const val = e.target.value;
+                                                        setCurrentQuantity(val === '' ? '' : parseInt(val));
+                                                    }}
                                                     inputProps={{ min: 1 }}
                                                 />
                                             </Grid>
@@ -453,7 +456,7 @@ export function ProductsPage() {
                                                 <IconButton
                                                     color="primary"
                                                     onClick={handleAddMaterial}
-                                                    disabled={currentMaterialId === ''}
+                                                    disabled={currentMaterialId === '' || currentQuantity === '' || currentQuantity < 1}
                                                     sx={{ bgcolor: alpha(theme.palette.primary.main, 0.1) }}
                                                 >
                                                     <AddIcon />

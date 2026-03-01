@@ -64,7 +64,7 @@ export function RawMaterialsPage() {
 
     const formLoading = createMutation.isPending || updateMutation.isPending;
 
-    const [formValues, setFormValues] = useState<RawMaterialRequestDTO>({
+    const [formValues, setFormValues] = useState<Omit<RawMaterialRequestDTO, 'stockQuantity'> & { stockQuantity: number | '' }>({
         code: '',
         name: '',
         stockQuantity: 0
@@ -112,7 +112,7 @@ export function RawMaterialsPage() {
         const { name, value } = e.target;
         setFormValues(prev => ({
             ...prev,
-            [name]: name === 'stockQuantity' ? parseInt(value) || 0 : value
+            [name]: name === 'stockQuantity' ? (value === '' ? '' : parseInt(value)) : value
         }));
     };
 
@@ -123,11 +123,11 @@ export function RawMaterialsPage() {
             if (editingMaterial) {
                 await updateMutation.mutateAsync({
                     id: editingMaterial.id,
-                    material: formValues
+                    material: formValues as RawMaterialRequestDTO
                 });
                 dispatch(showNotification({ message: 'Material updated successfully', severity: 'success' }));
             } else {
-                await createMutation.mutateAsync(formValues);
+                await createMutation.mutateAsync(formValues as RawMaterialRequestDTO);
                 dispatch(showNotification({ message: 'Material created successfully', severity: 'success' }));
             }
             handleCloseDialog();
@@ -225,8 +225,8 @@ export function RawMaterialsPage() {
                     </CardContent>
                 </Card>
 
-                <TableContainer component={Paper} sx={{ borderRadius: 3, boxShadow: '0 4px 20px rgba(0,0,0,0.08)', overflow: 'hidden' }}>
-                    <Table>
+                <TableContainer component={Paper} sx={{ borderRadius: 3, boxShadow: '0 4px 20px rgba(0,0,0,0.08)', overflow: 'auto' }}>
+                    <Table sx={{ minWidth: 650 }}>
                         <TableHead sx={{ bgcolor: alpha(theme.palette.primary.main, 0.04) }}>
                             <TableRow>
                                 <TableCell sx={{ fontWeight: 600 }}>Code</TableCell>
@@ -382,7 +382,7 @@ export function RawMaterialsPage() {
                             <Button
                                 type="submit"
                                 variant="contained"
-                                disabled={formLoading}
+                                disabled={formLoading || formValues.stockQuantity === '' || formValues.stockQuantity < 0}
                                 startIcon={formLoading ? <CircularProgress size={20} color="inherit" /> : null}
                                 sx={{ borderRadius: 2, px: 4 }}
                             >

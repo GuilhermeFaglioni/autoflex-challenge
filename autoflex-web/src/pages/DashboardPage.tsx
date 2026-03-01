@@ -61,7 +61,6 @@ export function DashboardPage() {
     return (
         <Fade in timeout={800}>
             <Box>
-                {/* Header Section */}
                 <Box sx={{ mb: 4, display: 'flex', justifyContent: 'space-between', alignItems: 'center' }}>
                     <Box>
                         <Stack direction="row" spacing={1.5} alignItems="center" sx={{ mb: 1 }}>
@@ -87,7 +86,6 @@ export function DashboardPage() {
                     </Button>
                 </Box>
 
-                {/* Top Stats - Gestalt: Continuity and Similarity */}
                 <Grid container spacing={3} sx={{ mb: 4 }}>
                     <Grid size={{ xs: 12, md: 6 }}>
                         <Card sx={{ height: '100%', borderRadius: 4, bgcolor: 'primary.main', color: 'white', position: 'relative', overflow: 'hidden' }}>
@@ -126,15 +124,14 @@ export function DashboardPage() {
                     </Grid>
                 </Grid>
 
-                {/* Main Content - Gestalt: Proximity and Common Region */}
                 <Grid container spacing={4}>
                     <Grid size={{ xs: 12 }}>
                         <Paper sx={{ borderRadius: 4, overflow: 'hidden', border: '1px solid', borderColor: 'divider' }}>
                             <Box sx={{ p: 3, borderBottom: '1px solid', borderColor: 'divider', bgcolor: alpha(theme.palette.background.default, 0.4) }}>
                                 <Typography variant="h6" fontWeight="700">Detailed Production Targets</Typography>
                             </Box>
-                            <TableContainer>
-                                <Table>
+                            <TableContainer sx={{ overflow: 'auto' }}>
+                                <Table sx={{ minWidth: 650 }}>
                                     <TableHead>
                                         <TableRow sx={{ bgcolor: alpha(theme.palette.background.default, 0.8) }}>
                                             <TableCell colSpan={2} sx={{ fontWeight: 700 }}>Product</TableCell>
